@@ -17,23 +17,12 @@ chrome_options.add_argument("--disable-notifications")
 driver = webdriver.Chrome(options=chrome_options)
 
 # Mở file để đọc
-with open('./links/do_choi_cho_meo_links.txt', 'r',encoding='utf-8') as file:  
+with open('./links/dung_cu_ve_sinh_links.txt', 'r',encoding='utf-8') as file:  
     # Đọc toàn bộ nội dung của file vào biến content
     content = file.read()
 
 
 links = content.split('\n')
-
-def writeFile(contents,nameFile):
-  path = "./news/Car/"+nameFile+".txt"
-  if not os.path.isfile(path):
-    with open(path, 'w') as file:
-      pass
-  for content in contents: 
-    text = content.text
-    with open(path, 'a', encoding="utf-8") as file:
-      file.write(text + "\n")
-
 
 
 names = []
@@ -89,7 +78,7 @@ data = pd.DataFrame({
   'link_image': link_images
 })
 
-data.to_csv('./data/do_choi_cho_meo.csv', index=False, encoding='utf-8-sig')
+data.to_csv('./data/dung_cu_ve_sinh.csv', index=False, encoding='utf-8-sig')
 
 # Đóng trình duyệt sau khi đã hoàn thành crawl
 driver.quit()
