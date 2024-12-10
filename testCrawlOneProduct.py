@@ -18,7 +18,7 @@ chrome_options.add_argument("--disable-notifications")
 driver = webdriver.Chrome(options=chrome_options)
 
 # Mở file để đọc
-with open('./links/vat_dung_an_uong.txt', 'r', encoding='utf-8') as file:
+with open('./links/dem_long_van_chuyen.txt', 'r', encoding='utf-8') as file:
     # Đọc toàn bộ nội dung của file vào biến content
     content = file.read()
 
@@ -31,6 +31,7 @@ prices = []
 descriptions = []
 link_images = []
 doms = []
+images = []
 
 
 def crawl(link, driver):
@@ -45,6 +46,10 @@ def crawl(link, driver):
     price = price_tag.text
 
     description_tag = driver.find_element(By.CLASS_NAME, 'short-description')
+    p_description_tag = description_tag.find_element(By.CSS_SELECTOR, 'p')
+    short_description = ''
+    if (p_description_tag is not None):
+        short_description = p_description_tag.text
 
     image_container_tag = driver.find_element(By.CLASS_NAME, 'large-image')
     image = image_container_tag.find_element(By.CSS_SELECTOR, 'img')
@@ -52,38 +57,28 @@ def crawl(link, driver):
 
     names.append(product_name.text)
     prices.append(price)
-    descriptions.append(description_tag.text)
+    descriptions.append(short_description)
     link_images.append(link_image)
 
     dom = driver.find_element(By.CLASS_NAME, 'std')
     dom_string = dom.get_attribute('outerHTML')
     doms.append(dom_string)
 
+    list_image_container = driver.find_element(By.CLASS_NAME, 'previews-list')
+    li_tags = list_image_container.find_elements(By.CSS_SELECTOR, 'li')
+    images_of_product = []
+    for li in li_tags:
+        image_tag = li.find_element(By.CSS_SELECTOR, 'a')
+        href = image_tag.get_attribute('href')
+        images_of_product.append(href)
+
     print('-------------------------------------------------------------------------------------------------')
     print('Name: ', product_name.text)
     print('Price :', price)
     print('description :', description_tag.text)
-    print('link image: ', link_image)
+    # print('link image: ', link_image)
+    print(images_of_product)
 
 
-for link in links:
-    try:
-        crawl(link, driver)
-    except Exception as e:
-        print(e)
-        continue
-
-
-data = pd.DataFrame({
-    'name': names,
-    'price': prices,
-    'description': descriptions,
-    'link_image': link_images,
-    'dom': doms,
-})
-
-data.to_csv('./data/vat_dung_an_uong.csv',
-            index=False, encoding='utf-8-sig')
-
-# Đóng trình duyệt sau khi đã hoàn thành crawl
-driver.quit()
+link = 'https://kunmiu.com/bat-chong-gu-mat-gau'
+crawl(link, driver)
