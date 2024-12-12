@@ -31,6 +31,8 @@ prices = []
 descriptions = []
 link_images = []
 doms = []
+product_options = []
+file_urls = []
 
 
 def crawl(link, driver):
@@ -58,12 +60,33 @@ def crawl(link, driver):
     dom = driver.find_element(By.CLASS_NAME, 'std')
     dom_string = dom.get_attribute('outerHTML')
     doms.append(dom_string)
-
+    option_texts = ''
+    try:
+        selector = driver.find_element(By.CLASS_NAME, 'single-option-selector')
+        options = selector.find_elements(By.CSS_SELECTOR, 'option')
+        for option in options:
+            option_texts += option.text + "--"
+        product_options.append(option_texts)
+    except:
+        product_options.append('No option')
     print('-------------------------------------------------------------------------------------------------')
+
+    product_images = ''
+    try:
+        slide = driver.find_element(By.CLASS_NAME, 'previews-list')
+        a_tags = slide.find_elements(By.CSS_SELECTOR, 'a')
+        for tag in a_tags:
+            link_file = tag.get_attribute('href')
+            product_images += link_file + "--"
+        file_urls.append(product_images)
+    except:
+        file_urls.append(product_images)
     print('Name: ', product_name.text)
     print('Price :', price)
     print('description :', description_tag.text)
     print('link image: ', link_image)
+    print('options:', option_texts)
+    print('images', product_images)
 
 
 for link in links:
@@ -74,15 +97,24 @@ for link in links:
         continue
 
 
+print('nameLength: ', len(names))
+print('priceLength: ', len(prices))
+print('descriptionLenght: ', len(descriptions))
+print('linkLength: ', len(link_images))
+print('options: ', len(product_options))
+print('file_urls: ', len(file_urls))
+
 data = pd.DataFrame({
     'name': names,
     'price': prices,
     'description': descriptions,
     'link_image': link_images,
     'dom': doms,
+    'product_option': product_options,
+    'file_url': file_urls,
 })
 
-data.to_csv('./data/vat_dung_an_uong.csv',
+data.to_csv('./data/vat_dung_an_uong(2).csv',
             index=False, encoding='utf-8-sig')
 
 # Đóng trình duyệt sau khi đã hoàn thành crawl

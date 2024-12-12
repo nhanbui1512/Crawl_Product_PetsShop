@@ -16,7 +16,7 @@ def writeLinkToFile(link):
 
 
 def getLinks(page):
-    driver.get("https://kunmiu.com/vat-dung-an-uong?page="+str(page))
+    driver.get("https://kunmiu.com/ky-sinh-trung?page="+str(page))
     time.sleep(2)
     links = driver.find_elements(By.CSS_SELECTOR, ".item-title")
     for link in links:
@@ -31,6 +31,6 @@ for i in range(1, 3):
 driver.quit()
 result = list(unique_links)
 
-with open('./links/vat_dung_an_uong.txt', 'w', encoding='utf-8') as file:
+with open('./links/ky_sinh_trung.txt', 'w', encoding='utf-8') as file:
     for link in result:
         file.write(link + "\n")
